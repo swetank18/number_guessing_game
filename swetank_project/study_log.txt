@@ -1,0 +1,20 @@
+Date: 2025-08-06 13:20:14
+Subject: maths
+Start Time: 1300
+End Time: 1400
+--------------------------
+Date: 2025-08-06 13:20:49
+Subject: physics
+Start Time: 1500
+End Time: 2000
+--------------------------
+Date: 2025-08-06 13:22:04
+Subject: code
+Start Time: 2000
+End Time: 21:00
+--------------------------
+Date: 2025-08-06 13:33:10
+Subject: history
+Start Time: 15:00
+End Time: 16:00
+--------------------------

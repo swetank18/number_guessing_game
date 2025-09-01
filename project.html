@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SRM Campus Helper</title>
+  <style>
+    :root{
+      --bg:#f6f6f9; --card:#fff; --text:#111; --muted:#555; --accent:#2b6ef6;
+    }
+    [data-theme="dark"]{ --bg:#0b0d10; --card:#0f1114; --text:#e6eef9; --muted:#9aa4b2; --accent:#66a3ff }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial; margin:0; background:var(--bg); color:var(--text); line-height:1.4}
+    header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(90deg,rgba(0,0,0,0.02),transparent)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#8bd3ff);display:grid;place-items:center;color:white;font-weight:700}
+    nav{display:flex;gap:12px}
+    nav a{padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--muted);font-weight:600}
+    nav a.active{color:var(--accent)}
+    main{padding:20px;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:20px}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(7,10,30,0.06)}
+    h2{margin:0 0 12px 0}
+
+    /* Canteen table */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.06);text-align:left}
+    th{font-size:13px;color:var(--muted)}
+
+    /* Map / Guide */
+    .places{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .place{padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(0,0,0,0.02),transparent);cursor:pointer}
+    .place:hover{transform:translateY(-4px);transition:transform .15s}
+
+    /* Countdown */
+    .countdown{display:flex;gap:10px}
+    .countdown .unit{min-width:70px;padding:10px;border-radius:8px;background:rgba(0,0,0,0.03);text-align:center}
+    .unit strong{display:block;font-size:18px}
+
+    /* Right column widgets */
+    .widgets{display:flex;flex-direction:column;gap:12px}
+
+    /* Dark mode toggle */
+    .toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+    .kbd{background:rgba(0,0,0,0.06);padding:4px 8px;border-radius:6px;font-size:12px}
+
+    /* small screens */
+    @media (max-width:900px){main{grid-template-columns:1fr;}.places{grid-template-columns:repeat(3,1fr)}header{flex-direction:column;gap:12px;align-items:flex-start}}
+
+    /* Easter egg modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5)}
+    .modal .panel{background:var(--card);padding:22px;border-radius:12px;max-width:520px;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">SRM</div>
+      <div>
+        <div style="font-weight:700">SRM Campus Helper</div>
+        <div style="font-size:12px;color:var(--muted)">Quick guide for canteens, libraries & clubs</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:14px;align-items:center">
+      <nav aria-label="Main Navigation">
+        <a href="#canteens" class="active">Canteens</a>
+        <a href="#libraries">Libraries</a>
+        <a href="#clubs">Clubs</a>
+      </nav>
+
+      <div class="toggle" id="themeToggle" role="button" tabindex="0" aria-pressed="false">
+        <span class="kbd">🌙</span>
+        <small style="color:var(--muted)">Dark</small>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div id="canteens" class="card">
+        <h2>Canteen Menu</h2>
+        <p style="margin:0 0 10px 0;color:var(--muted);font-size:13px">Prices shown in INR</p>
+        <table aria-describedby="canteen-desc">
+          <thead><tr><th>Item</th><th>Category</th><th style="width:110px">Price</th></tr></thead>
+          <tbody id="canteenList">
+            <!-- JS will populate - easy to edit in script -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="countdown" class="card" style="margin-top:14px">
+        <h2>Event: <span id="eventName">GFG Orientation</span></h2>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:10px">Countdown to the event (change date in script)</div>
+        <div class="countdown" id="countdownUnits">
+          <div class="unit"><strong id="days">--</strong>Days</div>
+          <div class="unit"><strong id="hours">--</strong>Hours</div>
+          <div class="unit"><strong id="mins">--</strong>Minutes</div>
+          <div class="unit"><strong id="secs">--</strong>Seconds</div>
+        </div>
+      </div>
+
+      <div id="map" class="card" style="margin-top:14px">
+        <h2>Interactive Map / Guide</h2>
+        <p style="margin:0 0 10px 0;color:var(--muted);font-size:13px">Click a place to view short info & directions</p>
+        <div class="places" id="placesGrid">
+          <!-- interactive cards injected by JS -->
+        </div>
+      </div>
+
+    </section>
+
+    <aside>
+      <div class="widgets">
+        <div class="card">
+          <h3 style="margin-bottom:8px">Quick Links</h3>
+          <ul style="margin:0;padding-left:18px;color:var(--muted)">
+            <li><a href="#canteens">Canteens</a></li>
+            <li><a href="#libraries">Libraries</a></li>
+            <li><a href="#clubs">Clubs</a></li>
+          </ul>
+        </div>
+
+        <div id="libraries" class="card">
+          <h3>Libraries</h3>
+          <p style="margin:0;color:var(--muted)">Main Library — 8:00 AM to 9:00 PM<br/>Digital Library — 24x7 (student access)</p>
+        </div>
+
+        <div id="clubs" class="card">
+          <h3>Clubs</h3>
+          <p style="margin:0;color:var(--muted)">GFG | Coding Club — weekly meetups<br/>Robotics Club — workshops & HUD</p>
+        </div>
+
+      </div>
+    </aside>
+  </main>
+
+  <div class="modal" id="easterModal" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h3>🎉 Secret Unlocked!</h3>
+      <p id="secretMsg">You found the Konami code — good luck with your submission!</p>
+      <button onclick="document.getElementById('easterModal').style.display='none'">Close</button>
+    </div>
+  </div>
+
+  <script>
+    /**********************
+     * Editable data area
+     **********************/
+    const CANTEEN_MENU = [
+      {item:'Masala Dosa', category:'Breakfast', price:60},
+      {item:'Idli (2 pcs)', category:'Breakfast', price:30},
+      {item:'Veg Thali', category:'Lunch', price:110},
+      {item:'Chicken Biryani', category:'Lunch', price:140},
+      {item:'Cold Coffee', category:'Beverage', price:40},
+      {item:'Samosa', category:'Snack', price:20}
+    ];
+
+    // Change this eventDate to the exact event date/time (ISO format) before submitting
+    const EVENT_NAME = 'GFG Orientation';
+    // Example: set to a date soon. Edit to match your assignment requirement.
+    const EVENT_DATE_ISO = '2025-09-05T18:00:00';
+
+    const PLACES = [
+      {id:'tech', title:'Tech Block', desc:'Main lecture halls & CS departments. Nearest canteen: Block C canteen. Walk 3 mins.'},
+      {id:'hostel', title:'Hostel', desc:'Hostel complex A & B. Student mess timings: 7–10 AM, 12–2 PM, 7–9 PM.'},
+      {id:'canteen', title:'Main Canteen', desc:'Largest canteen with multiple counters and affordable meals.'},
+      {id:'library', title:'Library', desc:'Main library with reading halls, book stacks & study rooms.'}
+    ];
+
+    /**********************
+     * Render canteen table
+     **********************/
+    const canteenList = document.getElementById('canteenList');
+    function renderCanteen(){
+      canteenList.innerHTML = '';
+      CANTEEN_MENU.forEach(it=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${it.item}</td><td>${it.category}</td><td>₹ ${it.price}</td>`;
+        canteenList.appendChild(tr);
+      });
+    }
+    renderCanteen();
+
+    /**********************
+     * Countdown logic
+     **********************/
+    const eventNameEl = document.getElementById('eventName');
+    const eventDate = new Date(EVENT_DATE_ISO);
+    eventNameEl.textContent = EVENT_NAME;
+
+    function updateCountdown(){
+      const now = new Date();
+      const diff = eventDate - now;
+      if(diff <= 0){
+        document.getElementById('days').textContent = '0';
+        document.getElementById('hours').textContent = '0';
+        document.getElementById('mins').textContent = '0';
+        document.getElementById('secs').textContent = '0';
+        return;
+      }
+      const days = Math.floor(diff / (1000*60*60*24));
+      const hours = Math.floor(diff / (1000*60*60) % 24);
+      const mins = Math.floor(diff / (1000*60) % 60);
+      const secs = Math.floor((diff/1000) % 60);
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = hours;
+      document.getElementById('mins').textContent = mins;
+      document.getElementById('secs').textContent = secs;
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    /**********************
+     * Interactive places
+     **********************/
+    const placesGrid = document.getElementById('placesGrid');
+    function renderPlaces(){
+      PLACES.forEach(p=>{
+        const el = document.createElement('div');
+        el.className='place';
+        el.setAttribute('role','button');
+        el.tabIndex = 0;
+        el.innerHTML = `<strong>${p.title}</strong><div style="font-size:13px;color:var(--muted);margin-top:6px">Click for directions</div>`;
+        el.addEventListener('click',()=>showPlace(p));
+        el.addEventListener('keypress',(e)=>{ if(e.key==='Enter') showPlace(p); });
+        placesGrid.appendChild(el);
+      })
+    }
+    function showPlace(p){
+      alert(p.title + '\n\n' + p.desc);
+    }
+    renderPlaces();
+
+    /**********************
+     * Theme toggle + localStorage
+     **********************/
+    const THEME_KEY = 'srm_theme_v1';
+    const body = document.body;
+    function applyTheme(theme){
+      if(theme==='dark') body.setAttribute('data-theme','dark');
+      else body.removeAttribute('data-theme');
+      const toggle = document.getElementById('themeToggle');
+      toggle.querySelector('small').textContent = theme==='dark'? 'Dark' : 'Light';
+      toggle.setAttribute('aria-pressed', theme==='dark');
+    }
+    // restore
+    const saved = localStorage.getItem(THEME_KEY) || (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+    applyTheme(saved);
+    document.getElementById('themeToggle').addEventListener('click',()=>{
+      const current = body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem(THEME_KEY, next);
+    });
+
+    /**********************
+     * Konami code easter egg
+     **********************/
+    const KONAMI = [38,38,40,40,37,39,37,39,66,65];
+    let kpos = 0;
+    window.addEventListener('keydown', e=>{
+      if(e.keyCode === KONAMI[kpos]){
+        kpos++;
+        if(kpos === KONAMI.length){
+          kpos = 0;
+          // reveal modal
+          const modal = document.getElementById('easterModal');
+          modal.style.display = 'flex';
+          // place a custom message (you can change this)
+          document.getElementById('secretMsg').textContent = 'Submit with confidence — Good luck, GFG member!';
+        }
+      } else { kpos = 0; }
+    });
+
+    /**********************
+     * Small helpers for graders
+     **********************/
+    // Expose a function to quickly update canteen data (for grading/edit)
+    window.updateCanteen = function(items){
+      // items should be an array of {item, category, price}
+      if(!Array.isArray(items)) return;
+      // Replace data (mutates local variable in this file only)
+      CANTEEN_MENU.length = 0; items.forEach(i=>CANTEEN_MENU.push(i));
+      renderCanteen();
+    }
+
+    // Accessibility: close modal on Escape
+    window.addEventListener('keydown', e=>{ if(e.key === 'Escape') document.getElementById('easterModal').style.display = 'none' });
+
+    /**********************
+     * End of script
+     **********************/
+  </script>
+</body>
+</html>
