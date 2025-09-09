@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Vision: JWST Image Gallery</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;400;600&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: #0a0e17;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(28, 15, 89, 0.4) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(89, 15, 60, 0.4) 0%, transparent 25%),
+                linear-gradient(to bottom, #050715, #0a0e17);
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 10px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 5px);
+            background-size: 550px 550px, 350px 350px;
+            background-position: 0 0, 40px 60px;
+            background-repeat: repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(95, 156, 242, 0.3);
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #6b7ee8, #6f42c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(107, 126, 232, 0.5);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            color: #9db0e6;
+            text-decoration: none;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: #6b7ee8;
+            text-shadow: 0 0 10px rgba(107, 126, 232, 0.7);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6b7ee8, transparent);
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .auth-container {
+            display: flex;
+            min-height: 80vh;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-box {
+            background: rgba(13, 18, 35, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0 0 40px rgba(81, 65, 187, 0.3),
+                        0 0 20px rgba(107, 126, 232, 0.2) inset;
+            border: 1px solid rgba(107, 126, 232, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(107, 126, 232, 0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+            z-index: -1;
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: #6b7ee8;
+            text-shadow: 0 0 10px rgba(107, 126, 232, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #9db0e6;
+            font-size: 16px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(107, 126, 232, 0.4);
+            border-radius: 10px;
+            color: #fff;
+            font-family: 'Exo 2', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #6b7ee8;
+            box-shadow: 0 0 15px rgba(107, 126, 232, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #6b7ee8, #6f42c1);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #6b7ee8, #6f42c1, #6b7ee8);
+            z-index: -1;
+            filter: blur(20px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(107, 126, 232, 0.4);
+        }
+
+        .btn:hover::before {
+            opacity: 0.7;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 25px;
+            color: #9db0e6;
+        }
+
+        .auth-switch a {
+            color: #6b7ee8;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .auth-switch a:hover {
+            text-shadow: 0 0 10px rgba(107, 126, 232, 0.7);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .image-card {
+            background: rgba(13, 18, 35, 0.7);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(107, 126, 232, 0.2);
+        }
+
+        .image-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(81, 65, 187, 0.3);
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0c1120;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, #3a2c7c 0%, transparent 30%),
+                radial-gradient(circle at 80% 70%, #2c437c 0%, transparent 30%),
+                radial-gradient(circle at 40% 50%, #1c2c5c 0%, transparent 40%);
+            background-size: 100% 100%;
+            opacity: 0.8;
+        }
+
+        .image-placeholder::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 40% 40%, white 0.5px, transparent 1px),
+                radial-gradient(circle at 60% 70%, white 0.5px, transparent 1px),
+                radial-gradient(circle at 30% 80%, white 0.5px, transparent 1px),
+                radial-gradient(circle at 70% 30%, white 0.5px, transparent 1px);
+            background-size: 300px 300px, 200px 200px, 400px 400px, 250px 250px;
+            background-position: 0 0, 30px 60px, 70px 120px, 120px 180px;
+        }
+
+        .image-info {
+            padding: 20px;
+        }
+
+        .image-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 10px;
+            color: #6b7ee8;
+        }
+
+        .image-info p {
+            color: #9db0e6;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-top: 1px solid rgba(95, 156, 242, 0.3);
+            color: #6b7ee8;
+            font-size: 14px;
+        }
+
+        /* Toggle between login and signup */
+        #signup-form {
+            display: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            nav ul {
+                gap: 15px;
+            }
+            
+            .auth-box {
+                width: 90%;
+                padding: 30px;
+            }
+            
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">COSMIC VISION</div>
+            <nav>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Gallery</a></li>
+                    <li><a href="#">About JWST</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="auth-container">
+            <div class="auth-box">
+                <div id="login-form">
+                    <h2 class="auth-title">LOGIN TO EXPLORE</h2>
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password">
+                    </div>
+                    <button class="btn" onclick="login()">LOGIN</button>
+                    <div class="auth-switch">
+                        Don't have an account? <a href="#" onclick="toggleAuth()">Sign Up</a>
+                    </div>
+                </div>
+
+                <div id="signup-form">
+                    <h2 class="auth-title">CREATE ACCOUNT</h2>
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <input type="text" id="signup-name" placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" placeholder="Create a password">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-confirm">Confirm Password</label>
+                        <input type="password" id="signup-confirm" placeholder="Confirm your password">
+                    </div>
+                    <button class="btn" onclick="signup()">SIGN UP</button>
+                    <div class="auth-switch">
+                        Already have an account? <a href="#" onclick="toggleAuth()">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery">
+            <div class="image-card">
+                <div class="image-placeholder"></div>
+                <div class="image-info">
+                    <h3>Cosmic Cliffs</h3>
+                    <p>One of the first images released from the James Webb Space Telescope showcasing the "Cosmic Cliffs" in the Carina Nebula.</p>
+                </div>
+            </div>
+            <div class="image-card">
+                <div class="image-placeholder"></div>
+                <div class="image-info">
+                    <h3>Stephan's Quintet</h3>
+                    <p>Webb's view of Stephan's Quintet, a visual grouping of five galaxies, in a new light.</p>
+                </div>
+            </div>
+            <div class="image-card">
+                <div class="image-placeholder"></div>
+                <div class="image-info">
+                    <h3>Southern Ring Nebula</h3>
+                    <p>The Southern Ring Nebula, as captured by JWST, revealing details never seen before.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>COSMIC VISION &copy; 2023 | James Webb Space Telescope Image Gallery</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleAuth() {
+            const loginForm = document.getElementById('login-form');
+            const signupForm = document.getElementById('signup-form');
+            
+            if (loginForm.style.display === 'none') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+            }
+        }
+
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            if (email && password) {
+                alert('Login attempted with: ' + email + '\nThis is a frontend demo only.');
+            } else {
+                alert('Please enter both email and password');
+            }
+        }
+
+        function signup() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+            
+            if (!name || !email || !password || !confirm) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (password !== confirm) {
+                alert('Passwords do not match');
+                return;
+            }
+            
+            alert('Signup attempted for: ' + name + ' (' + email + ')\nThis is a frontend demo only.');
+        }
+    </script>
+</body>
+</html>

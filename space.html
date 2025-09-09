@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gamified Space Auth</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Orbitron', sans-serif;
+    background: black;
+    color: #cfe0fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-image: url('https://www.nasa.gov/sites/default/files/thumbnails/image/stsci-01f2k6lx9mqbq3x6rphq7rvsmg.png');
+    background-size: cover;
+    background-position: center;
+  }
+  /* Overlay to make text pop */
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 20, 0.7);
+    z-index: 0;
+  }
+  /* Stars background */
+  .stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .star {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 3s infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
+  /* Nebula glows */
+  .nebula-layer {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: screen;
+  }
+  .nebula-layer:nth-child(1) {
+    background: radial-gradient(circle at 80% 20%, rgba(130,94,255,0.5), transparent 60%);
+    filter: blur(120px);
+    animation: pulseNebula 20s infinite alternate ease-in-out;
+  }
+  .nebula-layer:nth-child(2) {
+    background: radial-gradient(circle at 30% 80%, rgba(150,130,255,0.4), transparent 50%);
+    filter: blur(100px);
+    animation: pulseNebula 25s infinite alternate ease-in-out;
+  }
+  @keyframes pulseNebula {
+    0% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+    100% { opacity: 0.8; transform: scale(1); }
+  }
+  .auth-container {
+    background: rgba(8, 8, 20, 0.92);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 25px #7b3fe4, inset 0 0 55px #3a1f6f;
+    width: 360px;
+    max-width: 90vw;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+  h2 {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: #b3d1ff;
+    text-align: center;
+    user-select: none;
+  }
+  /* Planet toggles */
+  .toggle-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .toggle-button {
+    border-radius: 50%;
+    width: 60px; height: 60px;
+    font-size: 1.3em;
+    border: none;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 30% 30%, #5c4aff, #1b103d);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(150,130,255,0.7);
+    cursor: pointer;
+    transition: all 0.4s ease;
+    user-select: none;
+  }
+  .toggle-button.active {
+    transform: scale(1.2) rotate(10deg);
+    background: radial-gradient(circle at 40% 40%, #ffca7b, #c65eff);
+    box-shadow: 0 0 30px #ffca7b;
+  }
+  /* Forms */
+  form { display: none; flex-direction: column; gap: 16px; }
+  form.active { display: flex; }
+  label { font-size: 0.9em; color: #a0a8d3; user-select: none; }
+  input[type="email"], input[type="password"], input[type="text"] {
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: none;
+    font-size: 1em;
+    background: #1a1343;
+    color: #cfdcff;
+    box-shadow: inset 0 0 8px #978bec;
+    user-select: text;
+  }
+  input:focus {
+    outline: none;
+    box-shadow: 0 0 15px #937eff, inset 0 0 18px #a591ff;
+    background: #221a52;
+  }
+  button {
+    background: linear-gradient(45deg, #6c5eff, #9277ff);
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1.1em;
+    padding: 14px 0;
+    border-radius: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 18px #a484ff;
+    transition: all 0.3s ease;
+    user-select: none;
+  }
+  button:hover { transform: scale(1.1); box-shadow: 0 0 30px #9e7bff; }
+  .switch-form { color: #7d7de8; cursor: pointer; font-size: 0.9em; text-align: center; user-select: none; }
+  .switch-form:hover { color: #b1a7ff; }
+
+  /* Rocket animation */
+  .rocket {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    font-size: 2.5rem;
+    pointer-events: none;
+    transform: translateX(-50%);
+    transition: transform 2s ease-in;
+  }
+</style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="nebula-layer"></div>
+  <div class="nebula-layer"></div>
+  <div class="auth-container" role="main" aria-label="Authentication Forms">
+    <h2>Space Login</h2>
+    <div class="toggle-buttons" role="tablist" aria-label="Switch Authentication Forms">
+      <button class="toggle-button active" data-target="login-form" role="tab" aria-selected="true" aria-controls="login-form" id="login-tab" tabindex="0">🌍</button>
+      <button class="toggle-button" data-target="signup-form" role="tab" aria-selected="false" aria-controls="signup-form" id="signup-tab" tabindex="-1">🪐</button>
+      <button class="toggle-button" data-target="forgot-form" role="tab" aria-selected="false" aria-controls="forgot-form" id="forgot-tab" tabindex="-1">☄️</button>
+    </div>
+    <form id="login-form" class="active" role="tabpanel" aria-labelledby="login-tab" tabindex="0">
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="Enter your email" required autocomplete="username" />
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password" />
+      <button type="submit" aria-label="Login">Login</button>
+      <div class="switch-form" id="to-signup" role="link" tabindex="0" aria-label="Switch to signup form">Don’t have an account? Sign up</div>
+    </form>
+    <form id="signup-form" role="tabpanel" aria-labelledby="signup-tab" tabindex="-1">
+      <label for="signup-email">Email</label>
+      <input type="email" id="signup-email" placeholder="Enter your email" required autocomplete="email" />
+      <label for="signup-password">Password</label>
+      <input type="password" id="signup-password" placeholder="Enter your password" required autocomplete="new-password" />
+      <label for="signup-confirm">Confirm Password</label>
+      <input type="password" id="signup-confirm" placeholder="Confirm password" required autocomplete="new-password" />
+      <button type="submit" aria-label="Sign up">Sign Up</button>
+      <div class="switch-form" id="to-login" role="link" tabindex="0" aria-label="Switch to login form">Already have an account? Login</div>
+    </form>
+    <form id="forgot-form" role="tabpanel" aria-labelledby="forgot-tab" tabindex="-1">
+      <label for="forgot-email">Email</label>
+      <input type="email" id="forgot-email" placeholder="Enter your registered email" required autocomplete="email" />
+      <button type="submit" aria-label="Reset password">Reset Password</button>
+      <div class="switch-form" id="back-to-login" role="link" tabindex="0" aria-label="Switch back to login form">Back to Login</div>
+    </form>
+  </div>
+
+<script>
+  // Stars generator
+  const starContainer = document.querySelector('.stars');
+  for (let i = 0; i < 120; i++) {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    star.style.top = Math.random() * 100 + '%';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.animationDuration = (2 + Math.random() * 3) + 's';
+    starContainer.appendChild(star);
+  }
+
+  const toggleButtons = document.querySelectorAll('.toggle-button');
+  const forms = document.querySelectorAll('form');
+  const switchToSignup = document.getElementById('to-signup');
+  const switchToLogin = document.getElementById('to-login');
+  const switchBackToLogin = document.getElementById('back-to-login');
+
+  // Toggle forms with keyboard & click events, updating ARIA attrs
+  function activateTab(button) {
+    const target = button.getAttribute('data-target');
+    forms.forEach((f) => {
+      const isTarget = f.id === target;
+      f.classList.toggle('active', isTarget);
+      f.setAttribute('tabindex', isTarget ? '0' : '-1');
+    });
+    toggleButtons.forEach((b) => {
+      const isActive = b === button;
+      b.classList.toggle('active', isActive);
+      b.setAttribute('aria-selected', isActive);
+      b.setAttribute('tabindex', isActive ? '0' : '-1');
+    });
+    // Focus the first input in activated form
+    const activeForm = document.getElementById(target);
+    if (activeForm) {
+      const firstInput = activeForm.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+      if (firstInput) firstInput.focus();
+    }
+  }
+
+  toggleButtons.forEach((btn) => {
+    btn.addEventListener('click', () => activateTab(btn));
+    btn.addEventListener('keydown', (e) => {
+      // Left, right arrow navigation for tabs
+      let idx = Array.from(toggleButtons).indexOf(e.target);
+      if (e.key === 'ArrowRight') {
+        idx = (idx + 1) % toggleButtons.length;
+        toggleButtons[idx].focus();
+      } else if (e.key === 'ArrowLeft') {
+        idx = (idx - 1 + toggleButtons.length) % toggleButtons.length;
+        toggleButtons[idx].focus();
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activateTab(e.target);
+      }
+    });
+  });
+
+  // Switch form links
+  switchToSignup.addEventListener('click', () => activateTab(document.querySelector('button[data-target="signup-form"]')));
+  switchToLogin.addEventListener('click', () => activateTab(document.querySelector('button[data-target="login-form"]')));
+  switchBackToLogin.addEventListener('click', () => activateTab(document.querySelector('button[data-target="login-form"]')));
+
+  // Keyboard accessible form toggle links
+  [switchToSignup, switchToLogin, switchBackToLogin].forEach(element => {
+    element.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.target.click();
+      }
+    });
+  });
+
+  // Rocket launch animation on form submit
+  function launchRocket() {
+    const rocket = document.createElement('div');
+    rocket.classList.add('rocket');
+    rocket.textContent = '🚀';
+    document.body.appendChild(rocket);
+    setTimeout(() => { rocket.style.transform = 'translate(-50%, -120vh)'; }, 50);
+    setTimeout(() => rocket.remove(), 2100);
+  }
+
+  // Form submissions with basic simulations and rocket launch
+  document.getElementById('signup-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const p = document.getElementById('signup-password').value;
+    const c = document.getElementById('signup-confirm').value;
+    if (p !== c) {
+      alert('Passwords do not match!');
+      return;
+    }
+    launchRocket();
+    setTimeout(() => alert('Signup successful! (Simulation)'), 2200);
+    this.reset();
+  });
+
+  document.getElementById('login-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    launchRocket();
+    setTimeout(() => alert('Login successful! (Simulation 🚀)'), 2200);
+    this.reset();
+  });
+
+  document.getElementById('forgot-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    launchRocket();
+    setTimeout(() => alert('Password reset link sent! (Simulation)'), 2200);
+    this.reset();
+  });
+</script>
+</body>
+</html>

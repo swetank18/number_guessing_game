@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Master</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Quiz Master</h1>
+    <div id="progress-bar-wrapper"><div id="progress-bar"></div></div>
+    <div id="quiz">
+      <div id="timer"><span id="time">15</span>s</div>
+      <div id="question"></div>
+      <ul id="choices"></ul>
+      <div id="feedback"></div>
+      <button id="next-btn" style="display:none;">Next</button>
+    </div>
+    <div id="end-screen" style="display:none;">
+      <h2>Quiz Finished!</h2>
+      <p id="final-score"></p>
+      <button id="restart-btn">Play Again</button>
+      <h3>Your Past Scores</h3>
+      <ul id="score-history"></ul>
+    </div>
+    <audio id="correct-sound" src="https://cdn.pixabay.com/audio/2022/12/19/audio_12c6a1b2ec.mp3"></audio>
+    <audio id="wrong-sound" src="https://cdn.pixabay.com/audio/2022/12/19/audio_120b8edabf.mp3"></audio>
+    <audio id="tick-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9e53d2.mp3"></audio>
+    <audio id="done-sound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_11629c1cfd.mp3"></audio>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
